@@ -1,0 +1,101 @@
+- name: Deploy frontend1
+  os_server:
+    name: frontend1
+    image: rhel-7.6
+    cloud: openstack
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: frontend
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=load_balancers,deployment_name=dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Deploy app1
+  os_server:
+    name: app1
+    image: rhel-7.6
+    cloud: openstack
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: apps
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=app_servers,deployment_name=dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Deploy app2
+  os_server:
+    name: app2
+    image: rhel-7.6
+    cloud: openstack
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: apps
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=app_servers,deployment_name=dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Deploy appdb1
+  os_server:
+    name: appdb1
+    image: rhel-7.6
+    cloud: openstack
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: db
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=database_servers,deployment_name=dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keysa
+- name: Add floating IP to frontend1
+  os_floating_ip:
+    state: present
+    cloud: openstack
+    reuse: yes
+    server: frontend1
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to app1
+  os_floating_ip:
+    state: present
+    cloud: openstack
+    reuse: yes
+    server: app1
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to app2
+  os_floating_ip:
+    state: present
+    cloud: openstack
+    reuse: yes
+    server: app2
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to appdb1
+  os_floating_ip:
+    state: present
+    cloud: openstack
+    reuse: yes
+    server: appdb1
+    network: ext_network
+    wait: true
+    timeout: 200
+
